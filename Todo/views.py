@@ -1,4 +1,3 @@
-
 from django.shortcuts import render,redirect, HttpResponse
 from .models import List
 from .forms import ListForm
@@ -6,8 +5,6 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth import login, authenticate,logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-
-
 import json
 
 # Create your views here.
@@ -39,9 +36,18 @@ class ToDoList(TemplateView):
 
     def put(self,request):
         id = request.GET.get('id')
-        tasks = List.objects.get(id=id)
-        tasks.completed = True
-        tasks.save()
+        form_id = List.objects.filter(id=id).update(completed = True)
+        # completed = form_id.completed 
+        # print(completed)
+        # completed = True
+        form = ListForm(form_id, request.POST)
+        print(form.errors)
+        form.save()
+        # print(form_id)
+        # print(form.errors)
+        # if form.is_valid():
+        #     form.save()
+            
         response_data = {'status': 'success'}
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 
