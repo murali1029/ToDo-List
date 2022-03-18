@@ -1,3 +1,4 @@
+from turtle import update
 from django.shortcuts import render,redirect, HttpResponse
 from .models import List
 from .forms import ListForm
@@ -19,7 +20,6 @@ class ToDoList(TemplateView):
 
 
     def post(self,request, *args, **kwargs):
-        # context = self.get_context_data(**kwargs)
         form = ListForm(request.POST)
         items = self.request.POST.get("list")
         List.objects.create(user= self.request.user,item = items)
@@ -36,17 +36,12 @@ class ToDoList(TemplateView):
 
     def put(self,request):
         id = request.GET.get('id')
-        form_id = List.objects.filter(id=id).update(completed = True)
-        # completed = form_id.completed 
-        # print(completed)
-        # completed = True
-        form = ListForm(form_id, request.POST)
-        print(form.errors)
-        form.save()
-        # print(form_id)
-        # print(form.errors)
-        # if form.is_valid():
-        #     form.save()
+        form_id = List.objects.get(id=id)
+        form = ListForm(instance=form_id)
+        
+        if form.is_valid():
+            form.instance.completed = True
+            form.save()
             
         response_data = {'status': 'success'}
         return HttpResponse(json.dumps(response_data), content_type="application/json")
@@ -103,38 +98,3 @@ def register(request):
 def user_logout(request):
     logout(request)
     return render(request, "list/sample.html")
-
-
-
-
-
-# def index(request):
-#     form = ListForm()
-#     all_items = List.objects.all()
-#     context = {'all_items': all_items}
-#     if request.method == 'POST':
-#         print(all_items)
-#         form = ListForm(request.POST )
-#         items = request.POST.get("list")
-#         List.objects.create(item=items)
-#         if form.is_valid():
-#             form.save()
-#             print("valid")
-#             messages.success(request,"Item has been created successfully")
-#             return redirect("home",context)
-#         else:
-#             return redirect("home")
-
-#     else:
-#         return render(request,"list/sample.html",context)
-
-# def completed(request, pk):
-#     tasks = List.objects.get(id=pk)
-#     tasks.completed = True
-#     tasks.save()
-#     return redirect("home")
-
-# def delete(request, pk):
-#     tasks = List.objects.get(id=pk)
-#     tasks.delete()
-#     return redirect("home")
