@@ -98,4 +98,4 @@ def register(request):
 def user_logout(request):
     logout(request)
     return render(request, "list/sample.html")
-    # change the start again
+    # change the start again...
